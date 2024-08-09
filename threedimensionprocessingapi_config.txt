@@ -1,0 +1,141 @@
+smartdesigner:
+  component:
+    auditlog:
+      routekey: logMQ
+    common:
+      application:
+        name: ThreeDimensionProcessingApi
+        module: ThreeDimensionProcessingApi
+server:
+  max-http-header-size: 1024000
+  ssl:
+    enabled: true
+    key-store: file:/opt/titan/conf/cert/server.p12
+    key-store-password: '{pms:serverp12}'
+    key-store-type: PKCS12
+    key-store-provider: BC
+    enabled-protocols: TLSv1.2,TLSv1.3
+    ciphers: ECDHE-RSA-AES256-GCM-SHA384,ECDHE-RSA-AES128-GCM-SHA256
+    trust-store: file:/opt/titan/conf/cert/root.p12
+    trust-store-password: '{pms:rootp12}'
+    trust-store-type: JKS
+    trust-store-provider: SUN
+    client-auth: none
+  servlet:
+    context-path: /3dgsProcessingApi
+  port: 8542
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  jackson:
+    serialization:
+      write-dates-as-timestamps: true
+  servlet:
+    multipart:
+      maxFileSize: 1024MB
+      maxRequestSize: 1024MB
+  profiles:
+    active: pro
+  datasource:
+    url: jdbc:zenith:@7.212.43.163:15432?requireSSL=true&verifyServerCertificate=true&sslCipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+    username: THREE_DIMENSION_PROCESSING_API
+    password: '{encrypted:U0pRUwIzMjRiODVkNS0xN2FjLTQ4YWMtOTI5Yi01OWQwOTk1ZTFiOTMgAAAAAQAAADAAALTe1o5xs/K1veGa5eJn3o0dVxNV+7cRwSB4G0h8MQu6Bo9eGNFvQ920x9p0UjorpiskibN9bzWXVsTghSfwq/k=}'
+    driverClassName: com.huawei.gauss.jdbc.ZenithDriver
+    hikari:
+      idleTimeout: 60000
+      minimumIdle: 10
+      maximum-pool-size: 100
+      connection-timeout: 40000
+  application:
+    name: ThreeDimensionProcessingApi
+  main:
+    allow-circular-references: true
+mybatis:
+  mapperLocations: classpath*:mapper/*.xml
+titan:
+  security:
+    web:
+      rateLimit:
+        exclude:
+          - url: /healthCheck/v1/checkAll
+            method: GET
+        policies:
+          - rate: 1000
+            matcher:
+              priority: 0
+          - rate: 500
+            matcher:
+              priority: 1
+              partnerMatcher:
+                type: APPCODE
+      ms:
+        param:
+          enable: true
+          filter:
+            validate-file-path: WEB-INF/classes
+        enable-mvc-configurer: false
+    cipher:
+      aes:
+        work:
+          need-business: true
+          need-hmac: true
+          product-name: TITAN
+          service-name: THREEDIMENSIONPROCESSINGAPI
+          need-upgrade: true
+          max-available-version: 10
+          refresh-interval: 180
+    cert:
+      certconfig:
+        localPath: /opt/titan/conf/cert/
+        nameSpace: netlive-engine
+        secretName: threedimensionprocessingapi-certfiles
+        storeFilename: server.p12
+        storePasswordFilename: server.pwd
+        trustFilename: root.p12
+        trustPasswordFilename: root.pwd
+      auditlog:
+        module: ThreeDimensionProcessingApi
+    https:
+      httpclient:
+        ca-root-cert-key-store: /opt/titan/conf/cert/root.p12
+        ca-root-cert-password: '{pms:rootp12}' #根证书库密码
+        client-cert-password: '{pms:serverp12}'
+        client-cert-key-store: /opt/titan/conf/cert/server.p12
+monitor:
+  export:
+    monitorList:
+      - rateLimit
+net3d:
+  globalExceptionHandler:
+    enable: false
+file.storage:
+  storageType: edm
+  defaultTenantId: 2000
+  cipherRoot: /opt/titan/conf/cipher/root.key
+  cipherShared: /opt/titan/conf/cipher/common_shared.key
+  edm:
+    appId: com.huawei.gts.netlive
+    tokenDomain: https://iam-gz.hics-beta.huawei.com/internal/so/iam
+    appSecret: fl2PLp3EXQnuloxxKOahFTFahcFxuvep1wBZWWjv
+    appSecretContent: 000000020000000122C6390C3FDAC482825867262A60A1152A6152BF45233ECF7179C0423192860A000000010000080016DF2C2BA4F8A629C3165A2D6B53404521113E3B59C45902BF5E11B98FC96CE8000000041EF73D0C83A6F8445150958B5AED8A3A08D96ECFDC54A9918A6BF3F9E005AD87B5D00FBF6F08BA8204AEF78A3719368A5E81CE1DF73322E4BEA5DE91A444C6D4115834A682DDE522
+    edmDomain: https://edm3-beta.huawei.com/edm/projects/
+  minio:
+    baseUrl: https://sd-fileservice.netlive-engine.svc.cluster.local:8158
+    bucketName: smarts3
+    upload: /smartdesigner/fileservice/v2/file/putWithStream
+    delete: /smartdesigner/fileservice/v2/file/delete
+    download: /smartdesigner/fileservice/v2/file/download
+    multipartUpload: /smartdesigner/fileservice/v2/file/putWithStreamBlock
+    query: /smartdesigner/fileservice/v2/file/queryFileInfo
+    downloadBlock: /smartdesigner/fileservice/v2/file/break/downloadblock
+    breakFileInfo: /smartdesigner/fileservice/v2/file/break/fileinfo
+pcm:
+  basedir: /opt/titan/
+  exceptionHandler:
+    enable: true
+async-thread-pool:
+  corePoolSize: 2
+  maxPoolSize: 3
+  queueCapacity: 100
+  keepAliveSeconds: 60
+  threadNamePrefix: async-task-thread-pool-
