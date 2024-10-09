@@ -1,0 +1,19 @@
+import os
+import shutil
+
+# 原文件夹路径
+src_folder = r'd:\tmp\cv\debug'
+
+# 新文件夹路径
+dst_folder = r'd:\tmp\cv\2024.09.25-10.08'
+
+# 遍历原文件夹及其子文件夹下的所有文件
+for root, dirs, files in os.walk(src_folder):
+    for file in files:
+        # 判断文件是否为图片文件
+        if file.endswith('.jpg') or file.endswith('.png') or file.endswith('.jpeg'):
+            # 构造原文件路径和新文件路径
+            src_path = os.path.join(root, file)
+            dst_path = os.path.join(dst_folder, file)
+            # 移动文件
+            shutil.move(src_path, dst_path)
