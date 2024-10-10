@@ -8,3 +8,7 @@ https://github.com/MyMonsterCat/RapidOcr-Java
 
 https://blog.csdn.net/u012795439/article/details/135675005
 https://blog.51cto.com/momo1226/10014819
+配置https访问
+openssl genrsa -out server.key 1024
+openssl req -new -key server.key -out server.csr
+openssl x509 -req -in server.csr -out server.crt -signkey server.key -days 3650
